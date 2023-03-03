@@ -11,7 +11,7 @@ class Program
 
         args[0] = Path.GetFileNameWithoutExtension(args[0]);
         var cmdArgsPosition = args[0] == "remiliabox" ? 1 : 0;
-        IBoxCommand? executeCommand = null;
+        IBoxCommand executeCommand;
 
         // remiliabox から実行されており、引数がない場合
         if (cmdArgsPosition == 1 && args.Length <= 1)
@@ -19,19 +19,14 @@ class Program
             Help();
             return;
         }
-        
-        switch (args[cmdArgsPosition])
-        {
-            case "base64":
-                executeCommand = new Base64();
-                break;
-            
-            default:
-                executeCommand = new Undefined();
-                break;
-        }
 
-        if (executeCommand == null) return;
+        executeCommand = args[cmdArgsPosition] switch
+        {
+            "base64" => new Base64(),
+            "urlparse" => new UrlParamParser(),
+            _ => new Undefined()
+        };
+        
         executeCommand.Execute(cmdArgsPosition == 0 ? args : args.Skip(cmdArgsPosition).ToArray());
     }
 
